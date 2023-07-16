@@ -48,7 +48,7 @@ export default function LoadingScreen(props: LoadingScreenProps) {
                 </div>
               </div>
               <p className='flex-1 justify-center text-center text-2xl text-white'>
-                Waiting for your Wallet
+                Waiting for your Wallet Connection
               </p>
             </div>
           </Transition.Child>
