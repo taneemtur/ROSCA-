@@ -10,6 +10,7 @@ import ProposalCard, {ProposalState, ProposalType} from "./components/ProposalCa
 import {CollectionIcon} from "@heroicons/react/outline";
 import {Menu, Transition} from '@headlessui/react'
 import {ChevronDownIcon} from '@heroicons/react/solid'
+import { ConnectionSection } from './components/ConnectionSection';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -163,6 +164,9 @@ function App() {
                   alt=""
                 />
               </a>
+            </div>
+            <div className="">
+              <ConnectionSection/>
             </div>
             <div className="flex items-center space-x-4">
               <span
