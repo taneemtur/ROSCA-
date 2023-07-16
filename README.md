@@ -1,19 +1,3 @@
-<div align="center">
-    <img src="https://raw.githubusercontent.com/strumswell/trusted-issuer-registry/main/img/logo-light.png#gh-light-mode-only" width="360"/>
-    <img src="https://raw.githubusercontent.com/strumswell/trusted-issuer-registry/main/img/logo-dark.png#gh-dark-mode-only" width="360"/>
-</div>
-
-<div align="center">
-
-[![OCI standard](https://img.shields.io/badge/oci-standard-blue)](https://open-credentialing-initiative.github.io/Digital-Wallet-Conformance-Criteria/latest/)
-[![GitHub contributors](https://badgen.net/github/contributors/Open-Credentialing-Initiative/trusted-issuer-registry)](https://GitHub.com/Open-Credentialing-Initiative/trusted-issuer-registry/graphs/contributors/)
-[![GitHub issues](https://img.shields.io/github/issues/Open-Credentialing-Initiative/trusted-issuer-registry.svg)](https://GitHub.com/Open-Credentialing-Initiative/trusted-issuer-registry/issues/)
-[![GitHub pull-requests](https://img.shields.io/github/issues-pr/Open-Credentialing-Initiative/trusted-issuer-registry.svg)](https://GitHub.com/Open-Credentialing-Initiative/trusted-issuer-registry/pull/)
-
-</div>
-
----
-
 ## Introduction
 
 In a trusted and regulated ecosystem, a list of trusted issuing parties is needed. For this purpose, the OCI defined a secure, always-available, and self-governing mechanism to manage and retrieve a list of trusted Decentralized Identifiers (DIDs) belonging to trusted issuers. These issuers are trusted with issuing ATP and identity credentials while observing all needed regulations.
@@ -35,11 +19,6 @@ The chosen approach aims to enforce the following policies:
 ## Architecture
 
 The smart contract containing the trusted issuer registry is deployed to the Ethereum blockchain and acts as a backend. Its state and methods can be accessed via an Ethereum node, e.g., an OCI-owned one, that exposes all needed RPC methods or a service like [Infura](https://infura.io/).
-
-The following two sections will go into more detail on what both the smart contract and the frontend do and how they work.
-
-![](./img/dark-architecture.png#gh-dark-mode-only)
-![](./img/light-architecture.png##gh-light-mode-only)
 
 
 ### Smart Contract
@@ -66,28 +45,16 @@ The officially deployed versions of the trusted issuer registry can be found her
 
 The frontend is an easy-to-use web application that connects to the Smart Contract. Its purpose is to allow Statekeepers to easily add/ remove trusted issuer DIDs, create proposals, and vote on proposals in an easily digestible GUI.
 
-![frontend](./img/frontend.png)
-
 It is a React app that uses web3.js to connect to an Ethereum wallet in the form of MetaMask. MetaMask is the bridge between the frontend and the smart contract on the Ethereum network and allows to retrieve or modify the state of the contract. Modifications happen in the form of transactions to the smart contract that are signed and send via MetaMask in a user-friendly way to the Ethereum blockchain.
 
 MetaMask keeps track of all your Ethereum accounts, their transactions, and has a direct connection to the Ethereum blockchain. OCI Statekeepers are obligated to use a so-called hardware wallet in combination with MetaMask. In this case, a physical device stores the private keys of your Ethereum accounts and also signs transactions. In this mode, MetaMask only forwards your signed transactions to the Ethereum blockchain. This a needed security measure to prevent the leaking of private keys with which potential rouge actors could illegally modify the trusted issuer list.
 
 The officially hosted frontends can be found here:
-- [Trusted Issuer Registry Dashboard](https://ropsten-trusted-issuers.netlify.app/)
-- [Trusted Issuer Registry Dashboard (alt)](https://ropsten-trusted-issuers.vercel.app/)
+- [Dashboard](https://rosca-dap.vercel.app/)
 
 ---
 
-## 🤝 Contributing
-
-OCI encourages contributions from OCI member and non-member companies and individuals.
-Please send issues and pull requests by following our processes and agreements. Feel free to check the issues page.
-
-**By contributing, companies and individuals certify the assertions made in the [Developer's Certificate of Origin](https://developercertificate.org/).**
-
 ## 🏷️ Licence
-
-By submitting their contribution to OCI, the contributor certifies that they have the right to submit it under the open source license indicated here.
 
 **This project is [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)-licensed.**
 
