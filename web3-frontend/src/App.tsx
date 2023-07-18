@@ -155,20 +155,20 @@ function App() {
                 />
               </a>
             </div>
-            <div className="">
-              <ConnectionSection setAccount={setAccount} setBalance={setBalance}/>
-            </div>
+
             <div className="flex items-center space-x-4">
               <span
                 className="inline-flex items-center px-3 py-0.5 ml-1 rounded-full text-sm truncate font-medium bg-white text-indigo-600">
                 <span
                   className={"absolute w-3 h-3 " + (account ? "bg-green-500" : "bg-orange-400") + " border-1 rounded-full animate-pulse"}/>
                 <p className="ml-5">{account ? account : "Waiting for Wallet"}</p>
-                <span
-                  className={"absolute w-3 h-3 " + (account ? "bg-green-500" : "bg-orange-400") + " border-1 rounded-full animate-pulse"}/>
-                <p className="ml-5">{balance ? balance : "Waiting for Balance"}</p>
+                <p className="ml-5">{balance && balance }</p>
               </span>
-              <Menu as="div" className="relative inline-block text-left">
+              {!account&&<span
+                className="inline-flex items-center px-3 py-0.5 ml-1 rounded-full text-sm truncate font-medium bg-white text-indigo-600">
+                <ConnectionSection setAccount={setAccount} setBalance={setBalance}/>
+              </span>}
+              {/* <Menu as="div" className="relative inline-block text-left">
                 <div>
                   <Menu.Button
                     className="inline-flex items-center px-3 py-0.5 ml-1 rounded-full text-sm truncate font-medium bg-white text-indigo-600">
@@ -239,7 +239,7 @@ function App() {
                     </div>
                   </Menu.Items>
                 </Transition>
-              </Menu>
+              </Menu> */}
             </div>
           </div>
         </nav>

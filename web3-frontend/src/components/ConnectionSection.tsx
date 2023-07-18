@@ -47,7 +47,7 @@ export const ConnectionSection =(props:any)=>{
   
     return(
         <div >
-            {!accountPkhPreview && <button style={{backgroundColor:'yellow', padding:"10px", borderRadius:'10px'}} onClick={handleConnect}>Connect</button>}
+            {!accountPkhPreview && <button  onClick={handleConnect}>Connect</button>}
         </div>
     )
 }
