@@ -18,6 +18,7 @@ function classNames(...classes: string[]) {
 
 function App() {
   const [account, setAccount] = useState<string>("");
+  const [balance, setBalance] = useState<string>("");
   const [statekeepers, setStatekeepers] = useState<string[]>(["No Statekeepers defined yet."]);
   const [trustedIssuers, setTrustedIssuers] = useState<string[]>(["No Trusted Issuers defined yet."]);
   const [proposals, setProposals] = useState<[]>([]);
@@ -27,17 +28,6 @@ function App() {
 
   const [web3Ref, setWeb3Ref] = useState<Web3>()
 
-  useEffect(() => {
-    initialize();
-    // @ts-ignore
-    if (window.ethereum && web3Ref) {
-      // @ts-ignore
-      window.ethereum.on('accountsChanged', async () => {
-        const accounts = await web3Ref.eth.requestAccounts();
-        setAccount(accounts[0]);
-      })
-    }
-  }, [account]);
 
   useEffect(() => {
     initialize();
@@ -52,7 +42,6 @@ function App() {
     const proposals = await contract.methods.getProposals().call()
 
     setWeb3Ref(web3)
-    setAccount(accounts[0]);
     setStatekeepers(statekeepers);
     setTrustedIssuers(trustedIssuers);
     setProposals(proposals);
@@ -151,6 +140,7 @@ function App() {
     }
   }
 
+
   return (
     <div className="flex-col flex">
       <header className="bg-[#09427d]">
@@ -166,7 +156,7 @@ function App() {
               </a>
             </div>
             <div className="">
-              <ConnectionSection/>
+              <ConnectionSection setAccount={setAccount} setBalance={setBalance}/>
             </div>
             <div className="flex items-center space-x-4">
               <span
@@ -174,7 +164,10 @@ function App() {
                 <span
                   className={"absolute w-3 h-3 " + (account ? "bg-green-500" : "bg-orange-400") + " border-1 rounded-full animate-pulse"}/>
                 <p className="ml-5">{account ? account : "Waiting for Wallet"}</p>
-               </span>
+                <span
+                  className={"absolute w-3 h-3 " + (account ? "bg-green-500" : "bg-orange-400") + " border-1 rounded-full animate-pulse"}/>
+                <p className="ml-5">{balance ? balance : "Waiting for Balance"}</p>
+              </span>
               <Menu as="div" className="relative inline-block text-left">
                 <div>
                   <Menu.Button

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState} from "react"
 import { useAccountPkh, useConnect, useOnBlock, useTezos } from "../dapp/dapp"
 import { NETWORK } from "../dapp/defaults"
 
-export const ConnectionSection =()=>{
+export const ConnectionSection =(props:any)=>{
     const connect = useConnect()
     const accountPkh = useAccountPkh()
     const tezos = useTezos()
@@ -40,12 +40,14 @@ export const ConnectionSection =()=>{
       }, [loadBalance])
       
     // useOnBlock(tezos,loadBalance)
-    
-    return  <div style={{backgroundColor:'#9c9cff', padding:"10px"}}>
-                <div>Connected Account: {accountPkhPreview}</div>
-                <div>Your Balance: {balance}</div>
-                <div style={{backgroundColor:'yellow', padding:"10px", borderRadius:'10px'}}>
-                    <button  onClick={handleConnect}>Connect</button>
-                </div>
-            </div>
+  useEffect(() => {
+    props.setAccount(accountPkhPreview)
+    props.setBalance(balance)
+  }, [accountPkhPreview, balance])
+  
+    return(
+        <div >
+            {!accountPkhPreview && <button style={{backgroundColor:'yellow', padding:"10px", borderRadius:'10px'}} onClick={handleConnect}>Connect</button>}
+        </div>
+    )
 }
