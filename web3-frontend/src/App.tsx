@@ -19,6 +19,70 @@ function classNames(...classes: string[]) {
 function App() {
   const [account, setAccount] = useState<string>("");
   const [balance, setBalance] = useState<string>("");
+  const [statekeepers, setStatekeepers] = useState<string[]>(["No Statekeepers defined yet."]);
+  const [trustedIssuers, setTrustedIssuers] = useState<string[]>(["No Trusted Issuers defined yet."]);
+  const [proposals, setProposals] = useState<[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  async function addTrustedIssuer(address: string) {
+    if (0) {
+      // try {
+      //   setLoading(true);
+      //   await contract.methods.addTrustedIssuer(address).send({from: account});
+      //   setLoading(false);
+      //   const trustedIssuers = await contract.methods.getTrustedIssuers().call()
+      //   setTrustedIssuers(trustedIssuers);
+      // } catch (err) {
+      //   console.log(err);
+      //   setLoading(false);
+      // }
+    }else setTrustedIssuers([])
+  }
+
+  async function removeTrustedIssuer(did: string) {
+    if (0) {
+      // try {
+      //   setLoading(true);
+      //   await contract.methods.removeTrustedIssuer(did).send({from: account});
+      //   const trustedIssuers = await contract.methods.getTrustedIssuers().call()
+      //   setTrustedIssuers(trustedIssuers);
+      //   setLoading(false);
+      // } catch (err) {
+      //   console.log(err);
+      //   setLoading(false);
+      // }
+    }else setTrustedIssuers([])
+  }
+
+  async function proposeStatekeeperAddition(address: string) {
+    if (0) {
+      // try {
+      //   setLoading(true);
+      //   await contract.methods.createProposal(ProposalType.ADD_STATEKEEPER, address, 0, 0).send({from: account});
+      //   setLoading(false);
+      //   const proposals = await contract.methods.getProposals().call()
+      //   setProposals(proposals);
+      // } catch (err) {
+      //   console.log(err);
+      //   setLoading(false);
+      // }
+    }else setProposals(proposals)
+  }
+
+  async function proposeStatekeeperDeletion(address: string) {
+    if (0) {
+      // try {
+      //   setLoading(true);
+      //   await contract.methods.createProposal(ProposalType.REMOVE_STATEKEEPER, address, 0, 0).send({from: account});
+      //   setLoading(false);
+      //   const proposals = await contract.methods.getProposals().call()
+      //   setProposals(proposals);
+      // } catch (err) {
+      //   console.log(err);
+      //   setLoading(false);
+      // }
+    } else setProposals(proposals)
+  }
 
   return (
     <div className="flex-col flex">
@@ -72,6 +136,18 @@ function App() {
               </div>
             </div>
           </div>
+          <ContractSection inputType={InputTypes.ADDRESS} title={"Participants"}
+                           description={"A list of all the participants."}
+                           buttonText="Add Participant" deleteText={"Propose Deletion"} entries={statekeepers}
+                           modalTitle={"Create a proposal for a new statekeeper."}
+                           modalExampleInput={"0x00000..."} modalButtonText={"Propose Address"}
+                           addAction={proposeStatekeeperAddition} removeAction={proposeStatekeeperDeletion}/>
+          <ContractSection inputType={InputTypes.DID} title={"Trusted Leaders"}
+                           description={"A list of all Cohorts Issuers"}
+                           buttonText="Add Cohort Leader" deleteText={"Delete"} entries={trustedIssuers}
+                           modalTitle={"Enter a new DID of a Trusted Issuer"}
+                           modalExampleInput={"did:ethr:..."} modalButtonText={"Add DID"} addAction={addTrustedIssuer}
+                           removeAction={removeTrustedIssuer}/>
         </div>
       </main>
     </div>
