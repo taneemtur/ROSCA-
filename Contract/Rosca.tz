@@ -1,0 +1,112 @@
+archetype rosca_bidding
+
+
+// Define participant structure
+record participant = {
+  address : address;
+  contributed : bool = false;
+  pot_received : bool = false;
+  balance : tez = 0tz;
+  penalty_points : int = 0;
+}
+
+record bid = {
+  bidder : address;
+  amount : tez;
+}
+
+// Define the storage structure
+variable pot : tez = 0tz
+variable participants : list(participant) = list[]
+variable current_bid : bid
+variable current_receiver : address = ""
+constant max_participants : int = 10
+constant min_bid : tez = 1tz
+const metadataIpfsHash : string = ""
+variable paused : bool = false
+
+// Define events
+event potReceived
+event potDistributed
+event participantAdded
+event participantBanned
+
+// Define entries
+entry join(new_participant : address) {
+  whenNotPaused();
+  require(!participants.map(p => p.address).contains(new_participant), "AlreadyJoined");
+  require(participants.length() < max_participants, "MaxParticipantsReached");
+  participants.push(participant(new_participant, false, false, 0));
+}
+
+entry contribute(participant_address : address, amount : tez) {
+  whenNotPaused();
+  let contributor = participants.find(p => p.address = participant_address);
+  require(contributor.found, "InvalidParticipant");
+  require(!contributor.get.contributed, "AlreadyPaid");
+  contributor.get.contributed := true;
+  pot += amount;
+}
+
+entry place_bid(participant_address : address, amount : tez) {
+  whenNotPaused();
+  require(amount > current_bid.amount && amount >= min_bid, "InvalidBidAmount");
+  let bidder = participants.find(p => p.address = participant_address);
+  require(bidder.found, "InvalidParticipant");
+  current_bid.bidder := participant_address;
+  current_bid.amount := amount;
+}
+
+entry distribute() {
+  whenNotPaused();
+  let receiver = participants.find(p => p.address = current_bid.bidder);
+  require(receiver.found, "InvalidReceiver");
+  require(!receiver.get.pot_received, "AlreadyReceived");
+  require(pot > 0tz, "NoFunds");
+  transfer(current_bid.bidder, pot);
+  receiver.get.pot_received := true;
+  pot := 0tz;
+  participants.foreach(p => p.contributed := false);
+}
+
+entry penalize(non_contributor : address) {
+  onlyOwner();
+  let to_penalize = participants.find(p => p.address = non_contributor);
+  require(to_penalize.found, "InvalidParticipant");
+  require(!to_penalize.get.contributed, "NoPenalty");
+  to_penalize.get.penalty_points += 1;
+  if to_penalize.get.penalty_points >= 3 then
+    participants := participants.remove(non_contributor)
+}
+
+entry pause() {
+  onlyOwner();
+  paused := true;
+}
+
+entry unpause() {
+  onlyOwner();
+  paused := false;
+}
+
+transition reset_system() {
+  onlyOwner();
+  require(participants.all(p => p.pot_received), "NotAllReceived");
+  participants.foreach(p => {
+    p.contributed := false;
+    p.pot_received := false;
+  });
+  current_bid.bidder := "";
+  current_bid.amount := 0tz;s
+}
+
+// Entries for setting and getting the metadata IPFS hash
+entry setMetadataIpfsHash(newHash : string) {
+  onlyOwner();
+  metadataIpfsHash := newHash;
+}
+
+view getMetadataIpfsHash() -> string {
+  return metadataIpfsHash
+}
+
