@@ -10,6 +10,7 @@ import ProposalCard, {ProposalState, ProposalType} from "./components/ProposalCa
 import {CollectionIcon} from "@heroicons/react/outline";
 import {Menu, Transition} from '@headlessui/react'
 import {ChevronDownIcon} from '@heroicons/react/solid'
+import { WalletInfo } from './components/WalletInfo';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -17,137 +18,70 @@ function classNames(...classes: string[]) {
 
 function App() {
   const [account, setAccount] = useState<string>("");
+  const [balance, setBalance] = useState<string>("");
   const [statekeepers, setStatekeepers] = useState<string[]>(["No Statekeepers defined yet."]);
   const [trustedIssuers, setTrustedIssuers] = useState<string[]>(["No Trusted Issuers defined yet."]);
   const [proposals, setProposals] = useState<[]>([]);
-  const [contract, setContract] = useState<Contract>();
   const [loading, setLoading] = useState(false);
-  const [selectedContract, setSelectedContract] = useState(CONTRACT_ADDRESS_GOERLI);
-
-  const [web3Ref, setWeb3Ref] = useState<Web3>()
-
-  useEffect(() => {
-    initialize();
-    // @ts-ignore
-    if (window.ethereum && web3Ref) {
-      // @ts-ignore
-      window.ethereum.on('accountsChanged', async () => {
-        const accounts = await web3Ref.eth.requestAccounts();
-        setAccount(accounts[0]);
-      })
-    }
-  }, [account]);
-
-  useEffect(() => {
-    initialize();
-  }, [selectedContract])
-
-  async function initialize() {
-    const web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
-    const accounts = await web3.eth.requestAccounts();
-    const contract: Contract = new web3.eth.Contract(CONTRACT_ABI, selectedContract);
-    const statekeepers = await contract.methods.getStatekeepers().call()
-    const trustedIssuers = await contract.methods.getTrustedIssuers().call()
-    const proposals = await contract.methods.getProposals().call()
-
-    setWeb3Ref(web3)
-    setAccount(accounts[0]);
-    setStatekeepers(statekeepers);
-    setTrustedIssuers(trustedIssuers);
-    setProposals(proposals);
-    setContract(contract as any);
-  }
 
   async function addTrustedIssuer(address: string) {
-    if (contract) {
-      try {
-        setLoading(true);
-        await contract.methods.addTrustedIssuer(address).send({from: account});
-        setLoading(false);
-        const trustedIssuers = await contract.methods.getTrustedIssuers().call()
-        setTrustedIssuers(trustedIssuers);
-      } catch (err) {
-        console.log(err);
-        setLoading(false);
-      }
-    }
+    if (0) {
+      // try {
+      //   setLoading(true);
+      //   await contract.methods.addTrustedIssuer(address).send({from: account});
+      //   setLoading(false);
+      //   const trustedIssuers = await contract.methods.getTrustedIssuers().call()
+      //   setTrustedIssuers(trustedIssuers);
+      // } catch (err) {
+      //   console.log(err);
+      //   setLoading(false);
+      // }
+    }else setTrustedIssuers([])
   }
 
   async function removeTrustedIssuer(did: string) {
-    if (contract) {
-      try {
-        setLoading(true);
-        await contract.methods.removeTrustedIssuer(did).send({from: account});
-        const trustedIssuers = await contract.methods.getTrustedIssuers().call()
-        setTrustedIssuers(trustedIssuers);
-        setLoading(false);
-      } catch (err) {
-        console.log(err);
-        setLoading(false);
-      }
-    }
+    if (0) {
+      // try {
+      //   setLoading(true);
+      //   await contract.methods.removeTrustedIssuer(did).send({from: account});
+      //   const trustedIssuers = await contract.methods.getTrustedIssuers().call()
+      //   setTrustedIssuers(trustedIssuers);
+      //   setLoading(false);
+      // } catch (err) {
+      //   console.log(err);
+      //   setLoading(false);
+      // }
+    }else setTrustedIssuers([])
   }
 
   async function proposeStatekeeperAddition(address: string) {
-    if (contract) {
-      try {
-        setLoading(true);
-        await contract.methods.createProposal(ProposalType.ADD_STATEKEEPER, address, 0, 0).send({from: account});
-        setLoading(false);
-        const proposals = await contract.methods.getProposals().call()
-        setProposals(proposals);
-      } catch (err) {
-        console.log(err);
-        setLoading(false);
-      }
-    }
+    if (0) {
+      // try {
+      //   setLoading(true);
+      //   await contract.methods.createProposal(ProposalType.ADD_STATEKEEPER, address, 0, 0).send({from: account});
+      //   setLoading(false);
+      //   const proposals = await contract.methods.getProposals().call()
+      //   setProposals(proposals);
+      // } catch (err) {
+      //   console.log(err);
+      //   setLoading(false);
+      // }
+    }else setProposals(proposals)
   }
 
   async function proposeStatekeeperDeletion(address: string) {
-    if (contract) {
-      try {
-        setLoading(true);
-        await contract.methods.createProposal(ProposalType.REMOVE_STATEKEEPER, address, 0, 0).send({from: account});
-        setLoading(false);
-        const proposals = await contract.methods.getProposals().call()
-        setProposals(proposals);
-      } catch (err) {
-        console.log(err);
-        setLoading(false);
-      }
-    }
-  }
-
-  async function vote(proposalId: number, yea: boolean) {
-    if (contract) {
-      try {
-        setLoading(true);
-        await contract.methods.vote(proposalId, yea).send({from: account});
-        setLoading(false);
-        const proposals = await contract.methods.getProposals().call()
-        setProposals(proposals);
-      } catch (err) {
-        console.log(err);
-        setLoading(false);
-      }
-    }
-  }
-
-  async function enforceProposal(proposalId: number) {
-    if (contract) {
-      try {
-        setLoading(true);
-        await contract.methods.enforceProposal(proposalId).send({from: account});
-        setLoading(false);
-        const proposals = await contract.methods.getProposals().call()
-        const statekeepers = await contract.methods.getStatekeepers().call()
-        setProposals(proposals);
-        setStatekeepers(statekeepers);
-      } catch (err) {
-        console.log(err);
-        setLoading(false);
-      }
-    }
+    if (0) {
+      // try {
+      //   setLoading(true);
+      //   await contract.methods.createProposal(ProposalType.REMOVE_STATEKEEPER, address, 0, 0).send({from: account});
+      //   setLoading(false);
+      //   const proposals = await contract.methods.getProposals().call()
+      //   setProposals(proposals);
+      // } catch (err) {
+      //   console.log(err);
+      //   setLoading(false);
+      // }
+    } else setProposals(proposals)
   }
 
   return (
@@ -164,91 +98,14 @@ function App() {
                 />
               </a>
             </div>
+
             <div className="flex items-center space-x-4">
-              <span
-                className="inline-flex items-center px-3 py-0.5 ml-1 rounded-full text-sm truncate font-medium bg-white text-indigo-600">
-                <span
-                  className={"absolute w-3 h-3 " + (account ? "bg-green-500" : "bg-orange-400") + " border-1 rounded-full animate-pulse"}/>
-                <p className="ml-5">{account ? account : "Waiting for Wallet"}</p>
-               </span>
-              <Menu as="div" className="relative inline-block text-left">
-                <div>
-                  <Menu.Button
-                    className="inline-flex items-center px-3 py-0.5 ml-1 rounded-full text-sm truncate font-medium bg-white text-indigo-600">
-                    {selectedContract === CONTRACT_ADDRESS_GOERLI ? "Goerli" : "Goerli (no governance)"}
-                    <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true"/>
-                  </Menu.Button>
-                </div>
-
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items
-                    className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="py-1">
-                      <Menu.Item>
-                        {({active}) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                              'block px-4 py-2 text-sm'
-                            )}
-                            onClick={() => setSelectedContract(CONTRACT_ADDRESS_GOERLI)}
-                          >
-                            <div className="flex gap-2">
-                              {selectedContract === CONTRACT_ADDRESS_GOERLI &&
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none"
-                                     viewBox="0 0 24 24"
-                                     stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                                </svg>
-                              }
-                              <span className={selectedContract !== CONTRACT_ADDRESS_GOERLI ? "pl-7" : ""}>Goerli</span>
-                            </div>
-
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({active}) => (
-                          <a
-                            href="#"
-                            className={classNames(
-                              active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                              'block px-4 py-2 text-sm'
-                            )}
-                            onClick={() => setSelectedContract(CONTRACT_ADDRESS_GOERLI_NOGOV)}
-                          >
-                            <div className="flex gap-2">
-                              {selectedContract === CONTRACT_ADDRESS_GOERLI_NOGOV &&
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none"
-                                     viewBox="0 0 24 24"
-                                     stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                                </svg>
-                              }
-                              <span className={selectedContract !== CONTRACT_ADDRESS_GOERLI_NOGOV ? "pl-7" : ""}>Goerli (no governance)</span>
-                            </div>
-                          </a>
-                        )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
+              <WalletInfo/>
             </div>
           </div>
         </nav>
       </header>
       <main>
-        {web3Ref && <LoadingScreen open={loading} web3Provider={web3Ref}/>}
         <div className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex">
             <h1 className="text-2xl font-semibold text-gray-900">ROSCA trusted Cohorts</h1>
@@ -260,42 +117,12 @@ function App() {
                 <p className="mt-2 text-sm text-gray-700">
                   A list of Cohorts to be participated on.
                 </p>
-                {
-                  proposals.filter(p => p[6] == ProposalState.IN_PROGRESS).length > 0
-                    ?
-                    <div className="grid grid-flow-row-dense grid-cols-3 gap-7 py-6">
-                      {proposals.map((proposal, id) => {
-                        if (proposal[6] == ProposalState.IN_PROGRESS) {
-                          return (
-                            <ul role="list">
-                              <ProposalCard
-                                proposalId={id}
-                                proposalType={proposal[0]}
-                                proposalState={proposal[6]}
-                                address={proposal[1]}
-                                yeas={proposal[4]}
-                                nays={proposal[5]}
-                                newRate={proposal[3]}
-                                newRateType={proposal[2]}
-                                voteFunc={vote}
-                                enforceFunc={enforceProposal}
-                                currentAccount={account}
-                                contract={contract}
-                              />
-                            </ul>
-                          )
-                        }
-                      })
-                      }
-                    </div>
-                    :
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                       <CollectionIcon className="mx-auto h-12 w-12 text-gray-400 stroke-1"/>
                       <span
                         className="mt-2 block text-sm font-medium text-gray-900"> No open cohorts to participate on. </span>
                     </div>
-                }
               </div>
             </div>
           </div>

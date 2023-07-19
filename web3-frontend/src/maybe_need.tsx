@@ -1,0 +1,286 @@
+// import './App.css';
+// import {useEffect, useState, Fragment} from 'react';
+// import Web3 from 'web3';
+// import {CONTRACT_ABI, CONTRACT_ADDRESS_GOERLI, CONTRACT_ADDRESS_GOERLI_NOGOV} from './config';
+// import {Contract} from "web3-eth-contract"
+// import {InputTypes} from "./components/InputModal";
+// import LoadingScreen from "./components/LoadingScreen";
+// import ContractSection from "./components/ContractSection";
+// import ProposalCard, {ProposalState, ProposalType} from "./components/ProposalCard";
+// import {CollectionIcon} from "@heroicons/react/outline";
+// import {Menu, Transition} from '@headlessui/react'
+// import {ChevronDownIcon} from '@heroicons/react/solid'
+// import { ConnectionSection } from './components/ConnectionSection';
+
+// function classNames(...classes: string[]) {
+//   return classes.filter(Boolean).join(' ')
+// }
+
+// function App() {
+//   const [account, setAccount] = useState<string>("");
+//   const [balance, setBalance] = useState<string>("");
+//   const [statekeepers, setStatekeepers] = useState<string[]>(["No Statekeepers defined yet."]);
+//   const [trustedIssuers, setTrustedIssuers] = useState<string[]>(["No Trusted Issuers defined yet."]);
+//   const [proposals, setProposals] = useState<[]>([]);
+//   const [contract, setContract] = useState<Contract>();
+//   const [loading, setLoading] = useState(false);
+//   const [selectedContract, setSelectedContract] = useState(CONTRACT_ADDRESS_GOERLI);
+//   const [web3Ref, setWeb3Ref] = useState<Web3>()
+
+
+//   useEffect(() => {
+//     initialize();
+//   }, [selectedContract])
+
+//   async function initialize() {
+//     const web3 = new Web3(Web3.givenProvider || 'http://localhost:7545');
+//     const accounts = await web3.eth.requestAccounts();
+//     const contract: Contract = new web3.eth.Contract(CONTRACT_ABI, selectedContract);
+//     const statekeepers = await contract.methods.getStatekeepers().call()
+//     const trustedIssuers = await contract.methods.getTrustedIssuers().call()
+//     const proposals = await contract.methods.getProposals().call()
+
+//     setWeb3Ref(web3)
+//     setStatekeepers(statekeepers);
+//     setTrustedIssuers(trustedIssuers);
+//     setProposals(proposals);
+//     setContract(contract as any);
+//   }
+  
+//   async function addTrustedIssuer(address: string) {
+//     if (contract) {
+//       try {
+//         setLoading(true);
+//         await contract.methods.addTrustedIssuer(address).send({from: account});
+//         setLoading(false);
+//         const trustedIssuers = await contract.methods.getTrustedIssuers().call()
+//         setTrustedIssuers(trustedIssuers);
+//       } catch (err) {
+//         console.log(err);
+//         setLoading(false);
+//       }
+//     }
+//   }
+
+//   async function removeTrustedIssuer(did: string) {
+//     if (contract) {
+//       try {
+//         setLoading(true);
+//         await contract.methods.removeTrustedIssuer(did).send({from: account});
+//         const trustedIssuers = await contract.methods.getTrustedIssuers().call()
+//         setTrustedIssuers(trustedIssuers);
+//         setLoading(false);
+//       } catch (err) {
+//         console.log(err);
+//         setLoading(false);
+//       }
+//     }
+//   }
+
+//   async function proposeStatekeeperAddition(address: string) {
+//     if (contract) {
+//       try {
+//         setLoading(true);
+//         await contract.methods.createProposal(ProposalType.ADD_STATEKEEPER, address, 0, 0).send({from: account});
+//         setLoading(false);
+//         const proposals = await contract.methods.getProposals().call()
+//         setProposals(proposals);
+//       } catch (err) {
+//         console.log(err);
+//         setLoading(false);
+//       }
+//     }
+//   }
+
+//   async function proposeStatekeeperDeletion(address: string) {
+//     if (contract) {
+//       try {
+//         setLoading(true);
+//         await contract.methods.createProposal(ProposalType.REMOVE_STATEKEEPER, address, 0, 0).send({from: account});
+//         setLoading(false);
+//         const proposals = await contract.methods.getProposals().call()
+//         setProposals(proposals);
+//       } catch (err) {
+//         console.log(err);
+//         setLoading(false);
+//       }
+//     }
+//   }
+
+//   async function vote(proposalId: number, yea: boolean) {
+//     if (contract) {
+//       try {
+//         setLoading(true);
+//         await contract.methods.vote(proposalId, yea).send({from: account});
+//         setLoading(false);
+//         const proposals = await contract.methods.getProposals().call()
+//         setProposals(proposals);
+//       } catch (err) {
+//         console.log(err);
+//         setLoading(false);
+//       }
+//     }
+//   }
+
+//   async function enforceProposal(proposalId: number) {
+//     if (contract) {
+//       try {
+//         setLoading(true);
+//         await contract.methods.enforceProposal(proposalId).send({from: account});
+//         setLoading(false);
+//         const proposals = await contract.methods.getProposals().call()
+//         const statekeepers = await contract.methods.getStatekeepers().call()
+//         setProposals(proposals);
+//         setStatekeepers(statekeepers);
+//       } catch (err) {
+//         console.log(err);
+//         setLoading(false);
+//       }
+//     }
+//   }
+
+
+//   return (
+//     <div className="flex-col flex">
+//       <header className="bg-[#09427d]">
+//         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Top">
+//           <div className="w-full py-6 flex items-center justify-between border-b border-indigo-500 lg:border-none">
+//             <div className="flex items-center">
+//               <a href="#">
+//                 <img
+//                   className="h-9 w-auto"
+//                   src="https://images.squarespace-cdn.com/content/v1/611d0b2d86e03a029cd4c0dc/c3ea2a92-79a5-4bfe-bed6-64529221c00c/OCI+Full+Icon2.png?format=1500w"
+//                   alt=""
+//                 />
+//               </a>
+//             </div>
+
+//             <div className="flex items-center space-x-4">
+//               <span
+//                 className="inline-flex items-center px-3 py-0.5 ml-1 rounded-full text-sm truncate font-medium bg-white text-indigo-600">
+//                 <span
+//                   className={"absolute w-3 h-3 " + (account ? "bg-green-500" : "bg-orange-400") + " border-1 rounded-full animate-pulse"}/>
+//                 <p className="ml-5">{account ? account : "Waiting for Wallet"}</p>
+//                 <p className="ml-5">{balance && balance }</p>
+//               </span>
+//               {!account&&<span
+//                 className="inline-flex items-center px-3 py-0.5 ml-1 rounded-full text-sm truncate font-medium bg-white text-indigo-600">
+//                 <ConnectionSection setAccount={setAccount} setBalance={setBalance}/>
+//               </span>}
+//               {/* <Menu as="div" className="relative inline-block text-left">
+//                 <div>
+//                   <Menu.Button
+//                     className="inline-flex items-center px-3 py-0.5 ml-1 rounded-full text-sm truncate font-medium bg-white text-indigo-600">
+//                     {selectedContract === CONTRACT_ADDRESS_GOERLI ? "Goerli" : "Goerli (no governance)"}
+//                     <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true"/>
+//                   </Menu.Button>
+//                 </div>
+
+//                 <Transition
+//                   as={Fragment}
+//                   enter="transition ease-out duration-100"
+//                   enterFrom="transform opacity-0 scale-95"
+//                   enterTo="transform opacity-100 scale-100"
+//                   leave="transition ease-in duration-75"
+//                   leaveFrom="transform opacity-100 scale-100"
+//                   leaveTo="transform opacity-0 scale-95"
+//                 >
+//                   <Menu.Items
+//                     className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+//                     <div className="py-1">
+//                       <Menu.Item>
+//                         {({active}) => (
+//                           <a
+//                             href="#"
+//                             className={classNames(
+//                               active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+//                               'block px-4 py-2 text-sm'
+//                             )}
+//                             onClick={() => setSelectedContract(CONTRACT_ADDRESS_GOERLI)}
+//                           >
+//                             <div className="flex gap-2">
+//                               {selectedContract === CONTRACT_ADDRESS_GOERLI &&
+//                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none"
+//                                      viewBox="0 0 24 24"
+//                                      stroke="currentColor" stroke-width="2">
+//                                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+//                                 </svg>
+//                               }
+//                               <span className={selectedContract !== CONTRACT_ADDRESS_GOERLI ? "pl-7" : ""}>Goerli</span>
+//                             </div>
+
+//                           </a>
+//                         )}
+//                       </Menu.Item>
+//                       <Menu.Item>
+//                         {({active}) => (
+//                           <a
+//                             href="#"
+//                             className={classNames(
+//                               active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+//                               'block px-4 py-2 text-sm'
+//                             )}
+//                             onClick={() => setSelectedContract(CONTRACT_ADDRESS_GOERLI_NOGOV)}
+//                           >
+//                             <div className="flex gap-2">
+//                               {selectedContract === CONTRACT_ADDRESS_GOERLI_NOGOV &&
+//                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none"
+//                                      viewBox="0 0 24 24"
+//                                      stroke="currentColor" stroke-width="2">
+//                                   <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+//                                 </svg>
+//                               }
+//                               <span className={selectedContract !== CONTRACT_ADDRESS_GOERLI_NOGOV ? "pl-7" : ""}>Goerli (no governance)</span>
+//                             </div>
+//                           </a>
+//                         )}
+//                       </Menu.Item>
+//                     </div>
+//                   </Menu.Items>
+//                 </Transition>
+//               </Menu> */}
+//             </div>
+//           </div>
+//         </nav>
+//       </header>
+//       <main>
+//         <div className="py-6">
+//           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex">
+//             <h1 className="text-2xl font-semibold text-gray-900">ROSCA trusted Cohorts</h1>
+//           </div>
+//           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 mt-12">
+//             <div className="sm:flex sm:items-center">
+//               <div className="sm:flex-auto">
+//                 <h1 className="text-xl font-semibold text-gray-900">Cohorts</h1>
+//                 <p className="mt-2 text-sm text-gray-700">
+//                   A list of Cohorts to be participated on.
+//                 </p>
+//                     <div
+//                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+//                       <CollectionIcon className="mx-auto h-12 w-12 text-gray-400 stroke-1"/>
+//                       <span
+//                         className="mt-2 block text-sm font-medium text-gray-900"> No open cohorts to participate on. </span>
+//                     </div>
+//               </div>
+//             </div>
+//           </div>
+//           <ContractSection inputType={InputTypes.ADDRESS} title={"Participants"}
+//                            description={"A list of all the participants."}
+//                            buttonText="Add Participant" deleteText={"Propose Deletion"} entries={statekeepers}
+//                            modalTitle={"Create a proposal for a new statekeeper."}
+//                            modalExampleInput={"0x00000..."} modalButtonText={"Propose Address"}
+//                            addAction={proposeStatekeeperAddition} removeAction={proposeStatekeeperDeletion}/>
+//           <ContractSection inputType={InputTypes.DID} title={"Trusted Leaders"}
+//                            description={"A list of all Cohorts Issuers"}
+//                            buttonText="Add Cohort Leader" deleteText={"Delete"} entries={trustedIssuers}
+//                            modalTitle={"Enter a new DID of a Trusted Issuer"}
+//                            modalExampleInput={"did:ethr:..."} modalButtonText={"Add DID"} addAction={addTrustedIssuer}
+//                            removeAction={removeTrustedIssuer}/>
+//         </div>
+//       </main>
+//     </div>
+//   )
+// }
+
+// export default App;
+export {}
