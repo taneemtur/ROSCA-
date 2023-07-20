@@ -24,6 +24,8 @@ variable current_receiver : address = ""
 constant max_participants : int = 10
 constant min_bid : tez = 1tz
 constant metadataIpfsHash : string = ""
+variable participants : list(participant) = list[]
+
 
 // Define events
 event potReceived
@@ -43,8 +45,8 @@ transition unpause () {
 entry join(new_participant : address) {
   state is unpaused otherwise "ROSCA not yet started"
   require{
-  r1: !participants.map(p => p.address).contains(new_participant) : false otherwise "AlreadyJoined";
-  r2: participants.length() < max_participants : false otherwise "MaxParticipantsReached";
+  r1: !participants.map(p => p.address).contains(new_participant) otherwise "AlreadyJoined";
+  r2: participants.length() < max_participants otherwise "MaxParticipantsReached";
   }
 
   effect{
