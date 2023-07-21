@@ -1,8 +1,5 @@
 archetype test
-/* PAUSABLE ---------------------------------------------------------------- */
-
-variable paused : bool = false
-
+//deployed contract url https://better-call.dev/ghostnet/KT1F8LWWcZsfp2KYJQySJ59UgGwTzEVjt8wi
 function is_not_paused() : bool {
   do_fail_if(paused, "CONTRACT_PAUSED");
   return true
@@ -39,6 +36,12 @@ function set_current_receiver() {
   done
 }
 
+function is_time_passed(): bool{
+  const time ?= starting_time : "TIME ERROR";
+  do_require(now>time+dur,"NOT YET");
+  return true
+}
+
 entry pause() {
   require {
     pausable_r1: is_not_paused()
@@ -59,19 +62,24 @@ entry unpause() {
 
 //Storage---------------------------------------------------------------------
 asset participant identified by p_address{
-  p_address : address;
   id : nat ;
+  p_address : address;
   contributed : bool ;
   pot_received : bool ;
-  penalty_points : int ;
+  penalty_points : nat ;
 }
 
+variable paused : bool = false
+variable started : bool = false
+variable starting_time : option<date> = none
+variable dur : duration = 3m
 variable participants_count : nat = 0
 variable max_participants : nat = 10
 variable pot : tez = 0tz    
 variable distirbuted : bool = false
 variable receiver_setted : bool = false
-variable receiver : option<address> = none //burn address
+variable receiver : option<address> = none
+variable tried : bool = false
               
 
 //methods------------------------------------------------------------------------
@@ -81,7 +89,8 @@ entry join(new_participant : address){
       r2: participants_count<max_participants;
   }
   fail if {
-    c1: participant.contains(new_participant)
+    c1: participant.contains(new_participant);
+    c2: started
   }
   effect{
     participants_count += 1;
@@ -89,11 +98,17 @@ entry join(new_participant : address){
   }
 }
 
+entry start (){
+  starting_time := some(now);
+  started := true
+}
+
 entry contribute(participant_address : address, amount: tez){
   require {
       r3: is_not_paused();
       r4: participant.contains(participant_address);
       r5: is_not_contributed(participant_address);
+      r6: started
   }
   effect{
     participant.update(participant_address, {
@@ -106,23 +121,37 @@ entry contribute(participant_address : address, amount: tez){
 
 entry set_receiver() {
   require {
-    r6: is_all_contributed();
+    r7: started
   }
   effect{
     set_current_receiver()
   }
 }
+entry try(){
+  const time ?= starting_time : "TIME ERROR";
+  do_require(now>time+30s,"NOT YET");
+  tried := true
+}
 
 entry disturbute() {
   require {
-    r7: is_not_paused();
-    r8: pot>0tz;
-    r9: receiver_setted;
+    r8: started;
+    r9: is_not_paused();
+    r10: pot>0tz;
+    r11: receiver_setted;
+    r12: is_time_passed();
   }
   effect{
+    var ctrl : nat = 0;
     const r ?= receiver : "RECEIVER IS NONE";
     distirbuted := true;
     pot := 0tz;
+    if(participant[r].contributed)then begin
+      ctrl +=1;
+    end else begin
+      participant.remove(r);
+      do_require(participant[r].contributed,"PARTICIPANT BANNED. SET ANOTHER RECEIVER.")
+    end;
     participant.update(r, {
       pot_received = true
     });
@@ -130,14 +159,16 @@ entry disturbute() {
     participant.update(p, {
       contributed = false
     });
-    receiver_setted :=false;
     done;
+    receiver_setted :=false;
+    receiver := none;
+    started := false
   }
 }
 
 entry reset() {
   require {
-    r10: is_all_received(); 
+    r13: is_all_received(); 
   }
   effect {
     for p in participant do
@@ -147,12 +178,24 @@ entry reset() {
     pot := 0tz;
     distirbuted := false;
     receiver_setted :=false;
-    receiver := none //burn address
+    receiver := none
   }
+}
+
+view show_is_time_passed() : bool {
+  return is_time_passed()
 }
 
 view show_distirbuted() : bool{
   return distirbuted
+}
+
+view show_started() : bool{
+  return started
+}
+
+view show_starting_time() : option<date>{
+  return starting_time
 }
 
 view show_participantsCount(): nat {
@@ -166,6 +209,16 @@ view show_pot(): tez {
 view show_receiver(): address {
   const r ?= receiver : "RECEIVER IS NONE";
   return r
+}
+
+view show_isAllContributed(): bool {
+  var result =  is_all_contributed();
+  return result
+}
+
+view show_isAllReceived(): bool {
+  var result =  is_all_received();
+  return result
 }
 
 view show_participant(participant_address : address): option<asset_value<participant>>{
