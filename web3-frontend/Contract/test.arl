@@ -1,5 +1,5 @@
 archetype test
-//deployed contract url https://better-call.dev/ghostnet/KT1L8YoeuKsHSA4NhuJ4HyxFbEtVcYCETqW7
+//deployed contract url https://better-call.dev/ghostnet/KT1XHeyfURDktA68V8hGQV4SYaBBWHwKxAn6
 function is_not_paused() : bool {
   do_fail_if(paused, "CONTRACT_PAUSED");
   return true
@@ -42,6 +42,15 @@ function is_time_passed(): bool{
   return true
 }
 
+function calculate_amount(): tez{
+  do_require(started, "NOT STARTED YET");
+  do_fail_if(contributors_count=0,"ANY CONTRIBUTORS DOESNT EXIST");
+  var rosca = mutez_to_nat(rosca_total);
+  var rat = rosca/contributors_count;
+  var value = rat * 1tz;
+  return value
+}
+//Pausable ---------------------------------------------------------------------
 entry pause() {
   require {
     pausable_r1: is_not_paused()
@@ -68,12 +77,13 @@ asset participant identified by p_address{
   pot_received : bool ;
   penalty_points : nat ;
 }
-
+variable rosca_total : tez =10tz
 variable paused : bool = false
 variable started : bool = false
 variable starting_time : option<date> = none
 variable dur : duration = 3m
 variable participants_count : nat = 0
+variable contributors_count : nat = 0
 variable max_participants : nat = 10
 variable pot : tez = 0tz    
 variable distirbuted : bool = false
@@ -104,14 +114,18 @@ entry start (){
   started := true
 }
 
+entry default() {}
+
 entry contribute(participant_address : address, amount: tez){
   require {
       r3: is_not_paused() otherwise "PAUSED";
       r4: participant.contains(participant_address) otherwise "NOT PARTICIPANT";
       r5: is_not_contributed(participant_address) otherwise "NOT CONTRIBUTED";
       r6: started otherwise "NOT STARTED";
+      r15: amount=calculate_amount() otherwise "PLEASE MAKE SURE TO SEND THE RIGHT AMOUNT"
   }
   effect{
+    contributors_count +=1;
     participant.update(participant_address, {
       contributed = true
     });
@@ -125,7 +139,7 @@ entry contribute(participant_address : address, amount: tez){
 //   }
 // }
 
-entry set_receiver() {
+entry setReceiver() {
   require {
     r7: started
   }
@@ -188,8 +202,17 @@ entry reset() {
   }
 }
 
+entry setRosca(amount: tez){
+  rosca_total := amount;
+}
+
+//views --------------------------------------------------------------------
 view show_balance() : tez {
   return balance
+}
+
+view show_conribute_cost() : tez{
+  return calculate_amount()
 }
 
 view show_is_time_passed() : bool {
