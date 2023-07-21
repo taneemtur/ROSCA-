@@ -20,13 +20,20 @@ function is_all_contributed() : bool {
   return true
 }
 
+function is_all_received() : bool {
+  for p in participant do
+    do_require(participant[p].pot_received,"NOT ALL RECEIVED")
+  done;
+  return true
+}
+
 function set_current_receiver() { 
   var ctrl : nat = 0;
   for p in participant do
     if(participant[p].pot_received)then begin
-      ctrl += 1
+      ctrl += 1 //just does a thing, dont need to make sense
     end else begin
-      receiver := p;
+      receiver := some(p);
       receiver_setted := true;
     end
   done
@@ -64,7 +71,7 @@ variable max_participants : nat = 10
 variable pot : tez = 0tz    
 variable distirbuted : bool = false
 variable receiver_setted : bool = false
-variable receiver : address = tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU 
+variable receiver : option<address> = none //burn address
               
 
 //methods------------------------------------------------------------------------
@@ -113,9 +120,34 @@ entry disturbute() {
     r9: receiver_setted;
   }
   effect{
+    const r ?= receiver : "RECEIVER IS NONE";
     distirbuted := true;
     pot := 0tz;
-    participant[receiver].pot_received := true;
+    participant.update(r, {
+      pot_received = true
+    });
+    for p in participant do
+    participant.update(p, {
+      contributed = false
+    });
+    receiver_setted :=false;
+    done;
+  }
+}
+
+entry reset() {
+  require {
+    r10: is_all_received(); 
+  }
+  effect {
+    for p in participant do
+    participant[p].contributed := false;
+    participant[p].pot_received := false;
+    done;
+    pot := 0tz;
+    distirbuted := false;
+    receiver_setted :=false;
+    receiver := none //burn address
   }
 }
 
@@ -132,7 +164,8 @@ view show_pot(): tez {
 }
 
 view show_receiver(): address {
-  return receiver
+  const r ?= receiver : "RECEIVER IS NONE";
+  return r
 }
 
 view show_participant(participant_address : address): option<asset_value<participant>>{
