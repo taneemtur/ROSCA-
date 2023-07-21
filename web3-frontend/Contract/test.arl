@@ -20,17 +20,14 @@ function is_all_contributed() : bool {
   return true
 }
 
-function set_current_receiver(){ 
+function set_current_receiver() { 
   var ctrl : nat = 0;
   for p in participant do
     if(participant[p].pot_received)then begin
       ctrl += 1
-    end else if(false) then begin
-     receiver.update(0,{
-        receiver_address = p
-      }); 
     end else begin
-      receiver.add({id=0; setted = true; receiver_address = p})
+      receiver := p;
+      receiver_setted := true;
     end
   done
 }
@@ -56,6 +53,7 @@ entry unpause() {
 //Storage---------------------------------------------------------------------
 asset participant identified by p_address{
   p_address : address;
+  id : nat ;
   contributed : bool ;
   pot_received : bool ;
   penalty_points : int ;
@@ -66,12 +64,8 @@ variable max_participants : nat = 10
 variable pot : tez = 0tz    
 variable distirbuted : bool = false
 variable receiver_setted : bool = false
-
-asset receiver identified by id{
-  id: nat; 
-  setted : bool = false;
-  receiver_address : address;
-}                
+variable receiver : address = tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU 
+              
 
 //methods------------------------------------------------------------------------
 entry join(new_participant : address){
@@ -83,8 +77,8 @@ entry join(new_participant : address){
     c1: participant.contains(new_participant)
   }
   effect{
-    participant.add({p_address= new_participant; contributed=false; pot_received=false; penalty_points=0});
     participants_count += 1;
+    participant.add({id = participants_count; p_address= new_participant; contributed=false; pot_received=false; penalty_points=0});
   }
 }
 
@@ -103,22 +97,25 @@ entry contribute(participant_address : address, amount: tez){
   }
 }
 
-entry set_receiver(){
-  set_current_receiver();
-  receiver_setted :=true
+entry set_receiver() {
+  require {
+    r6: is_all_contributed();
+  }
+  effect{
+    set_current_receiver()
+  }
 }
 
 entry disturbute() {
   require {
-    r6: is_not_paused();
-    r7: is_all_contributed();
+    r7: is_not_paused();
     r8: pot>0tz;
     r9: receiver_setted;
   }
   effect{
     distirbuted := true;
     pot := 0tz;
-    participant[receiver[0].receiver_address].pot_received := true;
+    participant[receiver].pot_received := true;
   }
 }
 
@@ -135,7 +132,7 @@ view show_pot(): tez {
 }
 
 view show_receiver(): address {
-  return receiver[0].receiver_address
+  return receiver
 }
 
 view show_participant(participant_address : address): option<asset_value<participant>>{
