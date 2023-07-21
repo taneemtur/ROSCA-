@@ -1,5 +1,5 @@
 archetype test
-//deployed contract url https://better-call.dev/ghostnet/KT1F8LWWcZsfp2KYJQySJ59UgGwTzEVjt8wi
+//deployed contract url https://better-call.dev/ghostnet/KT1L8YoeuKsHSA4NhuJ4HyxFbEtVcYCETqW7
 function is_not_paused() : bool {
   do_fail_if(paused, "CONTRACT_PAUSED");
   return true
