@@ -80,6 +80,7 @@ variable distirbuted : bool = false
 variable receiver_setted : bool = false
 variable receiver : option<address> = none
 variable tried : bool = false
+variable contribute_amount : tez = 1tz
               
 
 //methods------------------------------------------------------------------------
@@ -105,19 +106,24 @@ entry start (){
 
 entry contribute(participant_address : address, amount: tez){
   require {
-      r3: is_not_paused();
-      r4: participant.contains(participant_address);
-      r5: is_not_contributed(participant_address);
-      r6: started
+      r3: is_not_paused() otherwise "PAUSED";
+      r4: participant.contains(participant_address) otherwise "NOT PARTICIPANT";
+      r5: is_not_contributed(participant_address) otherwise "NOT CONTRIBUTED";
+      r6: started otherwise "NOT STARTED";
   }
   effect{
     participant.update(participant_address, {
       contributed = true
     });
     pot += amount;
-    
   }
 }
+
+// entry collect(collector : address) {
+//   effect {
+//     caller.transfer balance to collector
+//   }
+// }
 
 entry set_receiver() {
   require {
@@ -168,7 +174,7 @@ entry disturbute() {
 
 entry reset() {
   require {
-    r13: is_all_received(); 
+    r14: is_all_received(); 
   }
   effect {
     for p in participant do
@@ -180,6 +186,10 @@ entry reset() {
     receiver_setted :=false;
     receiver := none
   }
+}
+
+view show_balance() : tez {
+  return balance
 }
 
 view show_is_time_passed() : bool {
