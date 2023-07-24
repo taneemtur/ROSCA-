@@ -1,5 +1,6 @@
-archetype test
-//deployed contract url "https://better-call.dev/ghostnet/KT1XAvmvqGVKjhsyq92ZzKsRWDaRdf43SmRJ/interact/check"
+archetype test(owner : address, totalRosca: tez, durationRosca: duration, maxUsers: nat)
+
+//deployed contract url "https://better-call.dev/ghostnet/KT1F2PhjjBmKKECZULkWFNB1D2iGp4nGRwsp"
 
 function is_not_paused() : bool {                                                         //returns true when rosca is not paused
   do_fail_if(paused, "CONTRACT_PAUSED");
@@ -57,7 +58,8 @@ entry pause() {                                                                 
     pausable_r1: is_not_paused() otherwise "ALREADY PAUSED"
   }
   effect {
-    paused := true
+    paused := true;
+    emit<Paused>({now})
   }
 }
 
@@ -66,7 +68,8 @@ entry unpause() {                                                               
     pausable_r2: paused otherwise "CONTRACT_NOT_PAUSED"
   }
   effect {
-    paused := false
+    paused := false;
+    emit<Resumed>({now})
   }
 }
 
@@ -88,9 +91,9 @@ asset participant identified by p_address{                                      
   pot_received : bool ;
 }
 
-variable rosca_total : tez = 2tz
-variable contributing_duration : duration = 1m
-variable max_participants : nat = 10
+variable rosca_total : tez = totalRosca
+variable contributing_duration : duration = durationRosca
+variable max_participants : nat = maxUsers
 
 variable paused : bool = false
 variable clock_started : bool = false
@@ -103,11 +106,29 @@ variable contribute_amount : tez = 1tz
 variable starting_time : option<date> = none
 variable receiver : option<address> = none
 
-variable tried : bool = false
-//methods------------------------------------------------------------------------
+//events ------------------------------------------------------------------------
+event Joined{
+  user : address;
+  timestamp : date
+}
+event Contributed{
+  user : address;
+  timestamp : date
+}
+event ContributionStarted{
+  timestamp : date
+}
+event Paused{
+  timestamp : date
+}
+event Resumed{
+  timestamp : date
+}
+//methods ------------------------------------------------------------------------
 entry default() {}                                                                       //allows contract to give amounts
 
 transition start(roscaTotal: tez, roscaDuration: duration , maxParticipants: nat ){      //starts rosca 
+  called by owner
   state is Starting
   require {
     is_paused_r1: is_not_paused() otherwise "Rosca is Paused"
@@ -132,10 +153,12 @@ entry join(){                                                                   
   effect{
     participants_count += 1;
     participant.add({id = participants_count; p_address= caller; contributed=false; pot_received=false});
+    emit<Joined>({caller; now})
   }
 }
 
 transition start_contributing (){                                                           //starts contirbuting section
+  called by owner
   state is Collecting
   require {
     is_paused_r3: is_not_paused() otherwise "Rosca is Paused";
@@ -143,7 +166,8 @@ transition start_contributing (){                                               
   from Collecting to Contributing 
   with effect{
   starting_time := some(now);
-  clock_started := true
+  clock_started := true;
+  emit<ContributionStarted>({now})
   }
 }
 
@@ -155,16 +179,21 @@ entry contribute(){                                                             
     contribute_r2: is_not_contributed(caller) otherwise "Already Contributed";
     contribute_r3: transferred=calculate_amount() otherwise "PLEASE MAKE SURE TO SEND THE EXACT AMOUNT"
   }
+  fail if {
+    contribute_f1: is_contribution_ended()  with "Time is over"
+  }
   effect{
     contributors_count +=1;
     participant.update(caller, {
       contributed = true
     });
     pot += transferred;
+    emit<Contributed>({caller; now})
   }
 }
 
 transition end_contributing (){                                                             //ends contirbuting section
+  called by owner
   state is Contributing
   require {
     is_paused_r5: is_not_paused() otherwise "Rosca is Paused";
@@ -177,6 +206,7 @@ transition end_contributing (){                                                 
 }
 
 transition check() {                                                                        //checks participants and ban non contributors
+  called by owner
   state is Checking
   require {
     is_paused_r6: is_not_paused() otherwise "Rosca is Paused";
@@ -196,6 +226,7 @@ transition check() {                                                            
 }
 
 transition setReceiver() {                                                                  //sets receiver of pot
+  called by owner
   state is Setting_Receiver
   require {
     is_paused_r7: is_not_paused() otherwise "Rosca is Paused";
@@ -206,13 +237,8 @@ transition setReceiver() {                                                      
   }
 }
 
-entry try(){
-  const time ?= starting_time : "TIME ERROR";
-  do_require(now>time+30s,"NOT YET");
-  tried := true
-}
-
 transition disturbute() {                                                                   //distirbutes pot to receiver
+  called by owner
   state is Distirbuting
   require {
     is_paused_r8: is_not_paused() otherwise "Rosca is Paused";
@@ -232,6 +258,7 @@ transition disturbute() {                                                       
 }
 
 transition continue() {                                                                     //continues rosca and allow restart contribute section
+  called by owner
   state is Distirbuted
   require {
     is_paused_r9: is_not_paused() otherwise "Rosca is Paused"; 
@@ -250,7 +277,8 @@ transition continue() {                                                         
   }
 }
 
-transition reset(){                                                                        //finihes rosca                                                                                 
+transition reset(){                                                                        //resets rosca                                                                                 
+  called by owner
   state is Distirbuted  
   require {
     reset_r1: is_all_received() otherwise "Not All Recevied"
@@ -260,13 +288,11 @@ transition reset(){                                                             
     for p in participant do
       participant.remove(p);
     done;
-    rosca_total := 2tz;
-    max_participants := 2;
-    contributing_duration := 1m;
   }
 }
 
 entry setRosca(amount: tez){
+  do_require(caller=owner,"you are not the owner");
   rosca_total := amount;
 }
 
@@ -281,26 +307,6 @@ view show_conributing_cost() : tez{
 
 view show_is_contribution_ended() : bool {
   return is_contribution_ended()
-}
-
-view show_clock_started() : bool{
-  return clock_started
-}
-
-view show_starting_time() : option<date>{
-  return starting_time
-}
-
-view show_participantsCount(): nat {
-  return participants_count
-}
-
-view show_contributors_count(): nat {
-  return contributors_count
-}
-
-view show_pot(): tez {
-  return pot
 }
 
 view show_currentState(): string {
