@@ -24,20 +24,20 @@ export const [
   useContractAddress,
   useNetwork,
   useIPFSBrowser,
-  useGitRepo,
-  useHelpUrl,
+  // useGitRepo,
+  // useHelpUrl,
   useSwitchTheme,
 ] = constate(
   () => {
     const [settingState, setState] = useState({
-      app_name        : 'Poll DAPP',
+      app_name        : 'ROSCA',
       endpoint        : 'https://ghostnet.ecadinfra.com',
-      contract        : 'KT1FcUNmyZ255yyfqWL3GC1AGqSY2vKqYwEg',
+      contract        : 'KT1F2PhjjBmKKECZULkWFNB1D2iGp4nGRwsp',
       ipfs_browser    : 'https://gateway.pinata.cloud/ipfs/',
       network         :  NetworkType.GHOSTNET,
       theme           :  Theme.Default,
-      git_repo        : 'https://github.com/completium/poll-dapp/tree/main',
-      help            : 'https://archetype-lang.org/docs/dapps/example/'
+      // git_repo        : 'https://github.com/completium/poll-dapp/tree/main',
+      // help            : 'https://archetype-lang.org/docs/dapps/example/'
     });
     
     const switchTheme = () => { setState(s => { return { ...s, theme : switch_theme(s.theme,true) }}) }
@@ -49,7 +49,7 @@ export const [
   v => v.settingState.contract,
   v => v.settingState.network,
   v => v.settingState.ipfs_browser,
-  v => v.settingState.git_repo,
-  v => v.settingState.help,
+  // v => v.settingState.git_repo,
+  // v => v.settingState.help,
   v => v.setters.switchTheme
 );

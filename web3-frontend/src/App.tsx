@@ -11,6 +11,7 @@ import {CollectionIcon} from "@heroicons/react/outline";
 import {Menu, Transition} from '@headlessui/react'
 import {ChevronDownIcon} from '@heroicons/react/solid'
 import { WalletInfo } from './components/WalletInfo';
+import { useAppName, useContractAddress, useNetwork } from './contexts/Settings';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -83,7 +84,14 @@ function App() {
       // }
     } else setProposals(proposals)
   }
+  const name = useAppName()
+  const network = useNetwork()
+  const contract = useContractAddress()
 
+  async function getContractData() {
+    console.log(name,network,contract)
+  }
+  getContractData()
   return (
     <div className="flex-col flex">
       <header className="bg-[#09427d]">
@@ -107,6 +115,11 @@ function App() {
       </header>
       <main>
         <div className="py-6">
+          <div>
+            <h2>
+
+            </h2>
+          </div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex">
             <h1 className="text-2xl font-semibold text-gray-900">ROSCA trusted Cohorts</h1>
           </div>
