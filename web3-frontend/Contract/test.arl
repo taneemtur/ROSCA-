@@ -1,5 +1,5 @@
 archetype test
-//deployed contract url https://better-call.dev/ghostnet/KT1XHeyfURDktA68V8hGQV4SYaBBWHwKxAn6
+//deployed contract url " "
 
 function is_not_paused() : bool {                                                         //returns true when rosca is not paused
   do_fail_if(paused, "CONTRACT_PAUSED");
@@ -277,14 +277,13 @@ view show_balance() : tez {
   return balance
 }
 
-view show_conribute_cost() : tez{
+view show_conributing_cost() : tez{
   return calculate_amount()
 }
 
 view show_is_contribution_ended() : bool {
   return is_contribution_ended()
 }
-
 
 view show_clock_started() : bool{
   return clock_started
@@ -304,6 +303,21 @@ view show_contributors_count(): nat {
 
 view show_pot(): tez {
   return pot
+}
+
+view show_currentState(): string {
+  var currentState: string =  "";
+  match state with
+  |Starting -> currentState := "Starting"
+  |Collecting -> currentState := "Starting"
+  |Contributing -> currentState := "Starting"
+  |Checking -> currentState := "Starting"
+  |Setting_Receiver -> currentState := "Starting"
+  |Distirbuting -> currentState := "Starting"
+  |Distirbuted -> currentState := "Starting"
+  |Finished -> currentState := "Starting"
+  end;
+  return currentState
 }
 
 view show_receiver(): address {
