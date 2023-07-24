@@ -80,7 +80,6 @@ states =
 |Setting_Receiver
 |Distirbuting
 |Distirbuted
-|Finished
 
 //Storage---------------------------------------------------------------------
 asset participant identified by p_address{                                                //participant struct
@@ -252,20 +251,15 @@ transition continue() {                                                         
   }
 }
 
-transition finish(){                                                                        //finihes rosca                                                                                 
+transition reset(){                                                                        //finihes rosca                                                                                 
   state is Distirbuted  
   require {
-    finish_r1: is_all_received() otherwise "Not All Recevied"
+    reset_r1: is_all_received() otherwise "Not All Recevied"
   }
-  from Distirbuted to Finished
+  from Distirbuted to Starting
   with effect{
     receiver_setted :=false;
   }
-}
-
-transition reset() {                                                                         //resets rosca                       
-  state is Finished
-  from Finished to Starting
 }
 
 entry setRosca(amount: tez){
@@ -309,13 +303,12 @@ view show_currentState(): string {
   var currentState: string =  "";
   match state with
   |Starting -> currentState := "Starting"
-  |Collecting -> currentState := "Starting"
-  |Contributing -> currentState := "Starting"
-  |Checking -> currentState := "Starting"
-  |Setting_Receiver -> currentState := "Starting"
-  |Distirbuting -> currentState := "Starting"
-  |Distirbuted -> currentState := "Starting"
-  |Finished -> currentState := "Starting"
+  |Collecting -> currentState := "Collecting"
+  |Contributing -> currentState := "Contributing"
+  |Checking -> currentState := "Checking"
+  |Setting_Receiver -> currentState := "Setting_Receiver"
+  |Distirbuting -> currentState := "Distirbuting"
+  |Distirbuted -> currentState := "Distirbuted"
   end;
   return currentState
 }
