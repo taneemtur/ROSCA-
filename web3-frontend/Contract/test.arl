@@ -1,5 +1,5 @@
 archetype test
-//deployed contract url " "
+//deployed contract url "https://better-call.dev/ghostnet/KT1XAvmvqGVKjhsyq92ZzKsRWDaRdf43SmRJ/interact/check"
 
 function is_not_paused() : bool {                                                         //returns true when rosca is not paused
   do_fail_if(paused, "CONTRACT_PAUSED");
@@ -44,8 +44,7 @@ function set_current_receiver() {                                               
 }
 
 function calculate_amount(): tez{                                                          //calculates the amount of payment per participant
-  do_require(clock_started, "NOT clock_started YET");
-  do_fail_if(participants_count=0,"ANY PARTICIPANTS DOESNT EXIST");
+  do_require(participants_count>0,"ANY PARTICIPANTS DOESNT EXIST");
   var rosca = mutez_to_nat(rosca_total);
   var rat = rosca/participants_count;
   var value = rat * 1utz;
@@ -89,7 +88,7 @@ asset participant identified by p_address{                                      
   pot_received : bool ;
 }
 
-variable rosca_total : tez = 10tz
+variable rosca_total : tez = 2tz
 variable contributing_duration : duration = 1m
 variable max_participants : nat = 10
 
@@ -226,7 +225,7 @@ transition disturbute() {                                                       
     participant.update(r, {
       pot_received = true
     });
-    transfer pot to r;
+    transfer balance to r;
     receiver_setted :=false;
     receiver := none;
   }
@@ -258,7 +257,12 @@ transition reset(){                                                             
   }
   from Distirbuted to Starting
   with effect{
-    receiver_setted :=false;
+    for p in participant do
+      participant.remove(p);
+    done;
+    rosca_total := 2tz;
+    max_participants := 2;
+    contributing_duration := 1m;
   }
 }
 
