@@ -44,10 +44,10 @@ function is_time_passed(): bool{
 
 function calculate_amount(): tez{
   do_require(started, "NOT STARTED YET");
-  do_fail_if(contributors_count=0,"ANY CONTRIBUTORS DOESNT EXIST");
+  do_fail_if(participants_count=0,"ANY PARTICIPANTS DOESNT EXIST");
   var rosca = mutez_to_nat(rosca_total);
-  var rat = rosca/contributors_count;
-  var value = rat * 1tz;
+  var rat = rosca/participants_count;
+  var value = rat * 1utz;
   return value
 }
 //Pausable ---------------------------------------------------------------------
@@ -77,7 +77,7 @@ asset participant identified by p_address{
   pot_received : bool ;
   penalty_points : nat ;
 }
-variable rosca_total : tez =10tz
+variable rosca_total : tez = 10tz
 variable paused : bool = false
 variable started : bool = false
 variable starting_time : option<date> = none
@@ -94,18 +94,18 @@ variable contribute_amount : tez = 1tz
               
 
 //methods------------------------------------------------------------------------
-entry join(new_participant : address){
+entry join(){
   require {
       r1: is_not_paused();
       r2: participants_count<max_participants;
   }
   fail if {
-    c1: participant.contains(new_participant);
+    c1: participant.contains(caller);
     c2: started
   }
   effect{
     participants_count += 1;
-    participant.add({id = participants_count; p_address= new_participant; contributed=false; pot_received=false; penalty_points=0});
+    participant.add({id = participants_count; p_address= caller; contributed=false; pot_received=false; penalty_points=0});
   }
 }
 
@@ -116,20 +116,20 @@ entry start (){
 
 entry default() {}
 
-entry contribute(participant_address : address, amount: tez){
+entry contribute(){
   require {
       r3: is_not_paused() otherwise "PAUSED";
-      r4: participant.contains(participant_address) otherwise "NOT PARTICIPANT";
-      r5: is_not_contributed(participant_address) otherwise "NOT CONTRIBUTED";
+      r4: participant.contains(caller) otherwise "NOT PARTICIPANT";
+      r5: is_not_contributed(caller) otherwise "NOT CONTRIBUTED";
       r6: started otherwise "NOT STARTED";
-      r15: amount=calculate_amount() otherwise "PLEASE MAKE SURE TO SEND THE RIGHT AMOUNT"
+      r15: transferred=calculate_amount() otherwise "PLEASE MAKE SURE TO SEND THE RIGHT AMOUNT"
   }
   effect{
     contributors_count +=1;
-    participant.update(participant_address, {
+    participant.update(caller, {
       contributed = true
     });
-    pot += amount;
+    pot += transferred;
   }
 }
 
@@ -166,12 +166,13 @@ entry disturbute() {
     const r ?= receiver : "RECEIVER IS NONE";
     distirbuted := true;
     pot := 0tz;
-    if(participant[r].contributed)then begin
+     for p in participant do
+    if(participant[p].contributed) then begin
       ctrl +=1;
     end else begin
-      participant.remove(r);
-      do_require(participant[r].contributed,"PARTICIPANT BANNED. SET ANOTHER RECEIVER.")
-    end;
+      participant.remove(p)
+    end
+    done;
     participant.update(r, {
       pot_received = true
     });
@@ -233,6 +234,10 @@ view show_starting_time() : option<date>{
 
 view show_participantsCount(): nat {
   return participants_count
+}
+
+view show_contributors_count(): nat {
+  return contributors_count
 }
 
 view show_pot(): tez {
