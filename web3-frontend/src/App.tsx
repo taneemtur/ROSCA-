@@ -27,6 +27,7 @@ function App() {
   const [trustedIssuers, setTrustedIssuers] = useState<string[]>(["No Trusted Issuers defined yet."]);
   const [proposals, setProposals] = useState<[]>([]);
   const [loading, setLoading] = useState(false);
+  const [contracts, setContracts] = useState(["KT1SWzzbD7YzrtZmJSGeGGmLhUFZnJcMYB4i","KT1Edr28YEyZCq3N9d4Gq14eJFNbWHdQa5cg"])
 
   async function addTrustedIssuer(address: string) {
     if (0) {
@@ -125,7 +126,9 @@ function App() {
                 <p className="mt-2 text-sm text-gray-700">
                   A list of Cohorts to be participated on.
                 </p>
-                  <RoscaCard/>
+                  {contracts.map((c)=>{
+                    return <RoscaCard contract={c}/>
+                  })}
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                       <CollectionIcon className="mx-auto h-12 w-12 text-gray-400 stroke-1"/>

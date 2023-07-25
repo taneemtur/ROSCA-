@@ -3,11 +3,12 @@ import { TezosToolkit } from '@taquito/taquito'
 import React, { useState } from 'react'
 import { useAppName, useContractAddress, useEndpoint, useNetwork } from '../contexts/Settings'
 
-const RoscaCard = () => {
+const RoscaCard = (props:any) => {
+
     const name = useAppName()
     const network = useNetwork()
     const endpoint = useEndpoint()
-    const contractAddress = useContractAddress() 
+    const contractAddress = props.contract
     const [info,setInfo] = useState(false)
     
     const ContractData = (props:any) => {
