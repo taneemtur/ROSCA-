@@ -31,7 +31,7 @@ export const [
   () => {
     const [settingState, setState] = useState({
       app_name        : 'ROSCA',
-      endpoint        : 'https://ghostnet.ecadinfra.com',
+      endpoint        : 'https://ghostnet.tezos.marigold.dev/',
       contract        : 'KT1F2PhjjBmKKECZULkWFNB1D2iGp4nGRwsp',
       ipfs_browser    : 'https://gateway.pinata.cloud/ipfs/',
       network         :  NetworkType.GHOSTNET,

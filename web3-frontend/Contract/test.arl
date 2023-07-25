@@ -1,6 +1,6 @@
 archetype test(owner : address, totalRosca: tez, durationRosca: duration, maxUsers: nat)
 
-//deployed contract url "https://better-call.dev/ghostnet/KT1F2PhjjBmKKECZULkWFNB1D2iGp4nGRwsp"
+//deployed contract url "https://better-call.dev/ghostnet/KT1Edr28YEyZCq3N9d4Gq14eJFNbWHdQa5cg"
 
 function is_not_paused() : bool {                                                         //returns true when rosca is not paused
   do_fail_if(paused, "CONTRACT_PAUSED");

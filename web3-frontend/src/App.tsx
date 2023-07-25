@@ -11,7 +11,10 @@ import {CollectionIcon} from "@heroicons/react/outline";
 import {Menu, Transition} from '@headlessui/react'
 import {ChevronDownIcon} from '@heroicons/react/solid'
 import { WalletInfo } from './components/WalletInfo';
-import { useAppName, useContractAddress, useNetwork } from './contexts/Settings';
+import { useAppName, useContractAddress, useEndpoint, useNetwork } from './contexts/Settings';
+import { TezosToolkit } from '@taquito/taquito';
+import React from 'react';
+import RoscaCard from './components/RoscaCard';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -84,14 +87,6 @@ function App() {
       // }
     } else setProposals(proposals)
   }
-  const name = useAppName()
-  const network = useNetwork()
-  const contract = useContractAddress()
-
-  async function getContractData() {
-    console.log(name,network,contract)
-  }
-  getContractData()
   return (
     <div className="flex-col flex">
       <header className="bg-[#09427d]">
@@ -130,6 +125,7 @@ function App() {
                 <p className="mt-2 text-sm text-gray-700">
                   A list of Cohorts to be participated on.
                 </p>
+                  <RoscaCard/>
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                       <CollectionIcon className="mx-auto h-12 w-12 text-gray-400 stroke-1"/>
