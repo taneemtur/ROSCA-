@@ -6,7 +6,6 @@ import {XIcon} from "@heroicons/react/outline";
 interface InputModalProps {
   open: boolean;
   setOpen: any;
-  inputType: InputTypes;
   inputCallback: any;
   inputExample: string;
   inputTitle: string;
@@ -24,7 +23,6 @@ export default function InputModal(props: InputModalProps) {
   const setOpen = props.setOpen
   const [input, setInput] = useState("")
   const inputCallback = props.inputCallback
-  const inputType = props.inputType
   const inputExample = props.inputExample
   const inputTitle = props.inputTitle
   const inputButtonText = props.inputButtonText
@@ -83,7 +81,6 @@ export default function InputModal(props: InputModalProps) {
                         htmlFor="address"
                         className="absolute -top-2 left-2 -mt-px inline-block px-1 bg-white text-xs font-medium text-gray-900"
                       >
-                        {inputType}
                       </label>
                       <input
                         type="text"

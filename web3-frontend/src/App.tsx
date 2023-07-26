@@ -1,8 +1,5 @@
 import './App.css';
 import {useEffect, useState, Fragment} from 'react';
-import Web3 from 'web3';
-import {CONTRACT_ABI, CONTRACT_ADDRESS_GOERLI, CONTRACT_ADDRESS_GOERLI_NOGOV} from './config';
-import {Contract} from "web3-eth-contract"
 import {InputTypes} from "./components/InputModal";
 import LoadingScreen from "./components/LoadingScreen";
 import ContractSection from "./components/ContractSection";
@@ -104,18 +101,18 @@ function App() {
               </div>
             </div>
           </div>
-          <ContractSection inputType={InputTypes.ADDRESS} title={"Participants"}
+          {/* <ContractSection title={"Participants"}
                            description={"A list of all the participants."}
                            buttonText="Add Participant" deleteText={"Propose Deletion"} entries={statekeepers}
                            modalTitle={"Create a proposal for a new statekeeper."}
                            modalExampleInput={"0x00000..."} modalButtonText={"Propose Address"}
                            addAction={proposeStatekeeperAddition} removeAction={proposeStatekeeperDeletion}/>
-          <ContractSection inputType={InputTypes.DID} title={"Trusted Leaders"}
+          <ContractSection title={"Trusted Leaders"}
                            description={"A list of all Cohorts Issuers"}
                            buttonText="Add Cohort Leader" deleteText={"Delete"} entries={trustedIssuers}
                            modalTitle={"Enter a new DID of a Trusted Issuer"}
                            modalExampleInput={"did:ethr:..."} modalButtonText={"Add DID"} addAction={addTrustedIssuer}
-                           removeAction={removeTrustedIssuer}/>
+                           removeAction={removeTrustedIssuer}/> */}
         </div>
       </main>
     </div>

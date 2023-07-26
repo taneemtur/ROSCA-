@@ -1,8 +1,9 @@
 
 import { TezosToolkit } from '@taquito/taquito'
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import { useState, useEffect } from 'react'
 import { useAppName, useContractAddress, useEndpoint, useNetwork } from '../contexts/Settings'
-import { FaUserTie } from 'react-icons/fa'
+
 
 const RoscaCard = (props:any) => {
     const name = useAppName()
@@ -64,15 +65,14 @@ const RoscaCard = (props:any) => {
             </div>
             <div className="flex flex-col h-32 pr-6 pl-12 pt-6">
                 <div className='flex flex-row pb-2'>
-                    <div className="pt-1"><FaUserTie/></div>
+                    
                     <p className='pl-4'>sdfsdfsdf23423fw2fd23d</p>
                 </div>
                 <div className='flex flex-row'>
-                    <div className="pt-1"><FaUserTie/></div>
+                    
                     <p className='pl-4'>sdfsdfsdf23423fw2fd23d</p>
                 </div>
                 <div className='flex flex-row'>
-                    <div className="pt-1"><FaUserTie/></div>
                     <p className='pl-4'>sdfsdfsdf23423fw2fd23d</p>
                 </div>
             </div>

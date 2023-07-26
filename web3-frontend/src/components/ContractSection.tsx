@@ -3,7 +3,6 @@ import {useState} from "react";
 import Avatar from "boring-avatars";
 
 interface ContractSectionProps {
-  inputType: InputTypes;
   title: string;
   buttonText: string;
   deleteText: string;
@@ -17,7 +16,6 @@ interface ContractSectionProps {
 }
 
 export default function ContractSection(props: ContractSectionProps) {
-  const inputType = props.inputType
   const title = props.title
   const buttonText = props.buttonText
   const deleteText = props.deleteText
@@ -33,7 +31,7 @@ export default function ContractSection(props: ContractSectionProps) {
 
   return (
     <div>
-      <InputModal inputType={inputType} open={openModal} setOpen={setOpenModal} inputCallback={addAction}
+      <InputModal open={openModal} setOpen={setOpenModal} inputCallback={addAction}
                   inputExample={modalExampleInput} inputTitle={modalTitle} inputButtonText={modalButtonText}/>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 mt-12">
         <div className="sm:flex sm:items-center">
