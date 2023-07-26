@@ -3,7 +3,7 @@ import { TezosToolkit } from '@taquito/taquito'
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useAppName, useContractAddress, useEndpoint, useNetwork } from '../contexts/Settings'
-import {FaCoins, FaUserTie, FaUsers} from 'react-icons/fa'
+// import {FaCoins, FaUserTie, FaUsers} from 'react-icons/fa'
 
 const RoscaCard = (props:any) => {
     const name = useAppName()
@@ -64,7 +64,7 @@ const RoscaCard = (props:any) => {
         console.log(operation)
     } 
 
-    getUserInfo('KT1SWzzbD7YzrtZmJSGeGGmLhUFZnJcMYB4i')
+    // getUserInfo('KT1SWzzbD7YzrtZmJSGeGGmLhUFZnJcMYB4i')
     
     return (
     <div> 
@@ -78,15 +78,15 @@ const RoscaCard = (props:any) => {
             </div>
             <div className="flex flex-col h-32 pr-6 pl-12 pt-6">
                 <div className='flex flex-row pb-2'> 
-                    <div className="pt-1"><FaUserTie/></div>
+                    {/* <div className="pt-1"><FaUserTie/></div> */}
                     <p className='pl-2'>{admin?parseAddress(admin):parseAddress(owner)}</p>
                 </div>
                 <div className='flex flex-row pb-2'>
-                    <div className="pt-1"><FaCoins/></div>
+                    {/* <div className="pt-1"><FaCoins/></div> */}
                     <p className='pl-2'>{rosca_total} ꜩ</p>
                 </div>
                 <div className='flex flex-row pb-2'>
-                    <div className="pt-1"><FaUsers/></div>
+                    {/* <div className="pt-1"><FaUsers/></div> */}
                     <p className='pl-2'>{participants_count.toNumber()}/{max_participants.toNumber()}</p>
                 </div>
             </div>

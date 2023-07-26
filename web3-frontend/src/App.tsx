@@ -2,7 +2,7 @@ import './App.css';
 import {useEffect, useState, Fragment} from 'react';
 import { WalletInfo } from './components/WalletInfo';
 import RoscaCard from './components/RoscaCard';
-import {HiOutlineCollection} from 'react-icons/hi'
+// import {HiOutlineCollection} from 'react-icons/hi'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -85,7 +85,7 @@ function App() {
                     </div>
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <div className="flex flex-col items-center"><HiOutlineCollection size={'48px'}/></div>
+                        {/* <div className="flex flex-col items-center"><HiOutlineCollection size={'48px'}/></div> */}
                       <span
                         className="mt-2 block text-sm font-medium text-gray-900"> No open cohorts to participate on. </span>
                     </div>
