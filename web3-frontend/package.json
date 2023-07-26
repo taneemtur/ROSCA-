@@ -20,11 +20,7 @@
     "constate": "^3.3.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-<<<<<<< HEAD
-    "react-icons": "^4.9.0",
-=======
     "react-router-dom": "^6.14.2",
->>>>>>> 9e1fc64c91f852b7b32c73699fe37457ce9eed15
     "react-scripts": "5.0.1",
     "react-spinners": "^0.11.0",
     "typescript": "^4.6.3",
