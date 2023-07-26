@@ -1,14 +1,6 @@
 import './App.css';
 import {useEffect, useState, Fragment} from 'react';
-import {InputTypes} from "./components/InputModal";
-import LoadingScreen from "./components/LoadingScreen";
-import ContractSection from "./components/ContractSection";
-import ProposalCard, {ProposalState, ProposalType} from "./components/ProposalCard";
-import {Menu, Transition} from '@headlessui/react'
 import { WalletInfo } from './components/WalletInfo';
-import { useAppName, useContractAddress, useEndpoint, useNetwork } from './contexts/Settings';
-import { TezosToolkit } from '@taquito/taquito';
-import React from 'react';
 import RoscaCard from './components/RoscaCard';
 import {HiOutlineCollection} from 'react-icons/hi'
 
