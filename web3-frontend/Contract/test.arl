@@ -84,7 +84,6 @@ variable paused : bool = false
 variable pot : tez = 0tz   
 variable participants_count : nat = 0
 variable contributors_count : nat = 0
-variable contribute_amount : tez = 1tz
 variable end_time : option<date> = none
 variable receiver : option<address> = none
 variable admin : address = owner
