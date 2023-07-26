@@ -4,14 +4,13 @@ import {InputTypes} from "./components/InputModal";
 import LoadingScreen from "./components/LoadingScreen";
 import ContractSection from "./components/ContractSection";
 import ProposalCard, {ProposalState, ProposalType} from "./components/ProposalCard";
-import {CollectionIcon} from "@heroicons/react/outline";
 import {Menu, Transition} from '@headlessui/react'
-import {ChevronDownIcon} from '@heroicons/react/solid'
 import { WalletInfo } from './components/WalletInfo';
 import { useAppName, useContractAddress, useEndpoint, useNetwork } from './contexts/Settings';
 import { TezosToolkit } from '@taquito/taquito';
 import React from 'react';
 import RoscaCard from './components/RoscaCard';
+import {HiOutlineCollection} from 'react-icons/hi'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -94,25 +93,13 @@ function App() {
                     </div>
                     <div
                       className="mt-5 relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                      <CollectionIcon className="mx-auto h-12 w-12 text-gray-400 stroke-1"/>
+                        <div className="flex flex-col items-center"><HiOutlineCollection size={'48px'}/></div>
                       <span
                         className="mt-2 block text-sm font-medium text-gray-900"> No open cohorts to participate on. </span>
                     </div>
               </div>
             </div>
           </div>
-          {/* <ContractSection title={"Participants"}
-                           description={"A list of all the participants."}
-                           buttonText="Add Participant" deleteText={"Propose Deletion"} entries={statekeepers}
-                           modalTitle={"Create a proposal for a new statekeeper."}
-                           modalExampleInput={"0x00000..."} modalButtonText={"Propose Address"}
-                           addAction={proposeStatekeeperAddition} removeAction={proposeStatekeeperDeletion}/>
-          <ContractSection title={"Trusted Leaders"}
-                           description={"A list of all Cohorts Issuers"}
-                           buttonText="Add Cohort Leader" deleteText={"Delete"} entries={trustedIssuers}
-                           modalTitle={"Enter a new DID of a Trusted Issuer"}
-                           modalExampleInput={"did:ethr:..."} modalButtonText={"Add DID"} addAction={addTrustedIssuer}
-                           removeAction={removeTrustedIssuer}/> */}
         </div>
       </main>
     </div>
